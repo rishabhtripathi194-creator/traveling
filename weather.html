@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather App</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #4facfe, #00f2fe);
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        width: 420px;
+        margin: 70px auto;
+        padding: 25px;
+        background: white;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+        margin-bottom: 15px;
+        font-size: 28px;
+    }
+
+    .search-box {
+        display: flex;
+        gap: 10px;
+    }
+
+    input {
+        flex: 1;
+        padding: 12px;
+        font-size: 18px;
+        border-radius: 8px;
+        border: 1px solid #999;
+    }
+
+    button {
+        padding: 12px 16px;
+        font-size: 18px;
+        background: #0066ff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #004fcc;
+    }
+
+    .weather-box {
+        margin-top: 25px;
+        padding: 20px;
+        border-radius: 15px;
+        background: #f2faff;
+    }
+
+    .icon {
+        width: 130px;
+    }
+
+    .temp {
+        font-size: 40px;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+
+    .city {
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .condition {
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+
+    .details {
+        font-size: 18px;
+        margin-top: 10px;
+        line-height: 26px;
+    }
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <h1>Weather App</h1>
+
+    <div class="search-box">
+        <input id="locationInput" type="text" placeholder="Enter city name...">
+        <button onclick="getWeather()">Search</button>
+    </div>
+
+    <div id="weatherResult" class="weather-box" style="display:none;">
+        <img id="weatherIcon" class="icon" src="">
+        <div id="cityName" class="city"></div>
+        <div id="temperature" class="temp"></div>
+        <div id="condition" class="condition"></div>
+
+        <div class="details">
+            <div id="humidity"></div>
+            <div id="wind"></div>
+            <div id="feels"></div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+async function getWeather() {
+    const location = document.getElementById("locationInput").value;
+
+    if (!location) {
+        alert("Please enter a location!");
+        return;
+    }
+
+    const url = `http://api.weatherapi.com/v1/current.json?key=72aaa8790c614f2a87f142622251711&q=${location}&aqi=yes`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.error) {
+            alert("Location not found!");
+            return;
+        }
+
+        // Show result box
+        document.getElementById("weatherResult").style.display = "block";
+
+        // Fill data
+        document.getElementById("cityName").innerText = data.location.name + ", " + data.location.country;
+        document.getElementById("temperature").innerText = data.current.temp_c + "°C";
+        document.getElementById("condition").innerText = data.current.condition.text;
+
+        document.getElementById("weatherIcon").src = "https:" + data.current.condition.icon;
+
+        document.getElementById("humidity").innerText = "💧 Humidity: " + data.current.humidity + "%";
+        document.getElementById("wind").innerText = "💨 Wind: " + data.current.wind_kph + " km/h";
+        document.getElementById("feels").innerText = "🌡 Feels like: " + data.current.feelslike_c + "°C";
+
+    } catch (error) {
+        alert("Error fetching weather!");
+    }
+}
+</script>
+
+</body>
+</html>
